@@ -11,6 +11,9 @@
 // @ is an alias to /src
 import HelloWorld from "@/components/HelloWorld.vue";
 import Form from "@/components/Form.vue";
+// comme il a été exporté avec un export default,
+// on peut renommer le service comme on le souhaite
+import tasksService from "@/services/tasks.js";
 
 export default {
   name: "Home",
@@ -18,13 +21,13 @@ export default {
     HelloWorld,
     Form,
   },
-setup() {
-  // data, c'est ce qui a été émis. qu'on peut nommer comme on veut
+  setup() {
+    // data, c'est ce qui a été émis. qu'on peut nommer comme on veut
     function addTask(data) {
-      console.log("Home.vue | task to add", data);
+      // console.log("Home.vue | task to add", data);
+      tasksService.create(data);
     }
-    return { addTask }
-
-}
-}
+    return { addTask };
+  },
+};
 </script>
