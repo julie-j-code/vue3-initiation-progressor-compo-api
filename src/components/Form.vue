@@ -1,7 +1,9 @@
 <template>
   <h3>Créer une tâche</h3>
   <form @submit.prevent="createTask">
-    <input type="text" placeholder="Nom de la tâche" v-model="name" /><br />
+    <!-- la ref est nécessaire au setup du focus ! onMounted -->
+      
+    <input type="text" placeholder="Nom de la tâche" v-model="name" ref="txtName"/><br />
     <textarea
       name="Description de la tâche"
       id=""
@@ -23,7 +25,7 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 
 // comme on utilise la méthode setup ici
 // à la différence des verions Vue 2
@@ -56,6 +58,8 @@ export default {
       },
     ]);
     let temporality = ref("");
+    // txtName initialisée à null va attendre que le component soit Mounted
+    let txtName = ref(null);
     //   pour que ces variables soient utilisables côté template
     // à la soumission du formulaire
     function createTask() {
@@ -73,7 +77,13 @@ export default {
       name.value = "";
       description.value = "";
       temporality.value = null;
+      txtName.value.focus();
     }
+     onMounted(() => {
+      // console.log("onMounted | txtName.value", txtName.value);
+      txtName.value.focus();
+    });
+
     return {
       description,
       name,
@@ -81,6 +91,7 @@ export default {
       temporality,
       createTask,
       resetForm,
+      txtName,
     };
   },
 };
