@@ -46,6 +46,11 @@
         <h3>{{ task.name }}</h3>
         <p>{{ task.description }}</p>
         <p>Echéance : {{ convertCase(task.temporality) }}</p>
+        <div>
+          <button class="small" @click="() => deleteTask(task.id)">
+            suppr
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -111,6 +116,16 @@ export default {
       }
     });
 
+     function deleteTask(id) {
+      tasksService.deleteTask(id);
+      // pour que dès que la suppression a eu lieu
+      // elle soit visible par l'utilisateur
+      tasks.value = tasksService.read();
+      // et pour le rafraichissement de taskFiltered
+      filter();
+    }
+
+
     // comme à chaque fois, pour pouvoir utiliser chaque variable côté template,
     // on les "exporte"
     return {
@@ -120,6 +135,7 @@ export default {
       tasksFiltered,
       convertCase,
       filter,
+      deleteTask,
     };
   },
 };
@@ -134,5 +150,8 @@ export default {
 .radio-filters {
   display: flex;
   justify-content: center;
+}
+.small {
+  width: 45px;
 }
 </style>

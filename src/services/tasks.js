@@ -30,9 +30,13 @@ function convertCase(temporalityKebabCase) {
     return result;
 }
 
+function deleteTask(id) {
+    tasks = tasks.filter((t) => t.id !== id);
+  }
 
 export default {
     create,
     read,
     convertCase,
+    deleteTask
 };
