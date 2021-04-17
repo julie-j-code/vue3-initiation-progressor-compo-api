@@ -2,8 +2,13 @@
   <h3>Créer une tâche</h3>
   <form @submit.prevent="createTask">
     <!-- la ref est nécessaire au setup du focus ! onMounted -->
-      
-    <input type="text" placeholder="Nom de la tâche" v-model="name" ref="txtName"/><br />
+
+    <input
+      type="text"
+      placeholder="Nom de la tâche"
+      v-model="name"
+      ref="txtName"
+    /><br />
     <textarea
       name="Description de la tâche"
       id=""
@@ -20,12 +25,16 @@
         {{ tempo.name }}
       </option></select
     ><br />
-    <button>Créer</button>
+    <!-- typique à vue si on veut que disabled dépende de la valeur d'une variable
+    on ajoute les : -->
+    <button :disabled="!isFormValid">créer</button>
   </form>
 </template>
 
 <script>
-import { ref, onMounted } from "vue";
+// à la différence de onMounted, computed sera appelé
+// à chaque changement d'un champ du formulaire
+import { ref, computed, onMounted } from "vue";
 
 // comme on utilise la méthode setup ici
 // à la différence des verions Vue 2
@@ -60,7 +69,7 @@ export default {
     let temporality = ref("");
     // txtName initialisée à null va attendre que le component soit Mounted
     let txtName = ref(null);
-    //   pour que ces variables soient utilisables côté template
+    // pour que les variables soient utilisables côté template
     // à la soumission du formulaire
     function createTask() {
       const task = {
@@ -79,19 +88,30 @@ export default {
       temporality.value = null;
       txtName.value.focus();
     }
-     onMounted(() => {
-      // console.log("onMounted | txtName.value", txtName.value);
+    onMounted(() => {
+      console.log("onMounted | txtName.value", txtName.value);
       txtName.value.focus();
     });
-
+    const isFormValid = computed(() => {
+      if (
+        name.value !== "" &&
+        description.value !== "" &&
+        temporality.value !== ""
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    });
     return {
-      description,
       name,
+      description,
       temporalityTypes,
       temporality,
       createTask,
       resetForm,
       txtName,
+      isFormValid,
     };
   },
 };
