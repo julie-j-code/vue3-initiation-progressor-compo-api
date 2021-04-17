@@ -19,6 +19,18 @@ function read() {
     return tasks;
 }
 
+function updateTask(task) {
+    const index = tasks.findIndex((t) => t.id === task.id);
+    console.log('index', index);
+    if (index === -1) {
+        return;
+    }
+    tasks[index] = task;
+    save();
+}
+
+
+
 function deleteTask(id) {
     tasks = tasks.filter((t) => t.id !== id);
     save();
@@ -61,4 +73,5 @@ export default {
     convertCase,
     deleteTask,
     save,
+    updateTask,
 };

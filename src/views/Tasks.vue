@@ -1,5 +1,11 @@
 <template>
   <div v-if="tasks.length > 0">
+    <Modal
+      v-if="isInEditMode"
+      :task="taskToEdit"
+      @updatetask="updateTask($event)"
+      @cancel="cancelEdit"
+    />
     <!-- pour les boutons permettant de selectionner une temporality -->
     <div class="radio-filters">
       <label for="all">
@@ -47,9 +53,8 @@
         <p>{{ task.description }}</p>
         <p>Echéance : {{ convertCase(task.temporality) }}</p>
         <div>
-          <button class="small" @click="() => deleteTask(task.id)">
-            suppr
-          </button>
+          <button class="small" @click="() => deleteTask(task.id)">suppr</button>
+          <button class="small" @click="() => toggle(task)">modif</button>
         </div>
       </div>
     </div>
@@ -64,13 +69,20 @@
 // de manière à  pouvoir les observer !
 import { ref, watch } from "vue";
 import tasksService from "@/services/tasks.js";
+import Modal from "../components/Modal.vue";
 export default {
+  components: {
+    Modal,
+  },
   setup() {
     // console.log("selectedTemporality", selectedTemporality);
     const tasks = ref([]);
     const letters = ref("");
     const selectedTemporality = ref("");
     let tasksFiltered = ref([]);
+    // pour la modale
+    let isInEditMode = ref(false);
+    let taskToEdit = ref(null);
 
     // le .value est nécessaire côté JS,  pas côté template
     tasks.value = tasksService.read();
@@ -116,7 +128,7 @@ export default {
       }
     });
 
-     function deleteTask(id) {
+    function deleteTask(id) {
       tasksService.deleteTask(id);
       // pour que dès que la suppression a eu lieu
       // elle soit visible par l'utilisateur
@@ -124,7 +136,22 @@ export default {
       // et pour le rafraichissement de taskFiltered
       filter();
     }
-
+    // pour les modifications demandées côté modale
+    function toggle(task) {
+      taskToEdit.value = task;
+      isInEditMode.value = true;
+    }
+    function updateTask(task) {
+      console.log("updateTask", task);
+      tasksService.updateTask(task);
+      tasks.value = tasksService.read();
+      filter();
+      cancelEdit();
+    }
+    function cancelEdit() {
+      isInEditMode.value = false;
+      taskToEdit.value = null;
+    }
 
     // comme à chaque fois, pour pouvoir utiliser chaque variable côté template,
     // on les "exporte"
@@ -136,6 +163,11 @@ export default {
       convertCase,
       filter,
       deleteTask,
+      isInEditMode,
+      taskToEdit,
+      toggle,
+      updateTask,
+      cancelEdit,
     };
   },
 };
@@ -152,6 +184,7 @@ export default {
   justify-content: center;
 }
 .small {
-  width: 45px;
+  width: 60px;
+  display: inline-block;
 }
 </style>
